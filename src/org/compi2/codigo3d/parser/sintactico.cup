@@ -23,12 +23,19 @@ action code
 :}
 
 terminal String ID, ENTERO, DECIMAL;
-terminal TokenC3D MAS, MENOS, MULT, DIV, POT, PAR_IZQ, PAR_DER;
+terminal TokenC3D MAS, MENOS, MULT, DIV, POT, PAR_IZQ, PAR_DER, AND,
+        OR, NOT, EQ, DIF, GT, LT, GT_EQ, LT_EQ;
 nonterminal NodoC3D inicial, expresion;
 
+
+precedence left AND;
+precedence left OR;
+precedence right NOT;
+precedence nonassoc EQ,DIF,GT,LT,GT_EQ,LT_EQ;
 precedence left MAS, MENOS;
 precedence left MULT, DIV; 
 precedence right POT; 
+
 
 start with inicial;
 
@@ -73,12 +80,75 @@ expresion   ::= expresion:izq MAS expresion:der
                         ControlC3D.agregarC3D(c3d);
                         RESULT = new NodoC3D(temp); 
                     :}
+            |   expresion:e1 AND expresion:e2
+                {:
+                    String temp = ControlC3D.generaTemp();
+                    String c3d = temp + " = " + e1.getCad() + " && " + e2.getCad() + ";\n";
+                    ControlC3D.agregarC3D(c3d);
+                    RESULT = new NodoC3D(temp);
+                :}
+            |   expresion:e1 OR expresion:e2
+                {:
+                    String temp = ControlC3D.generaTemp();
+                    String c3d = temp + " = " + e1.getCad() + " || " + e2.getCad() + ";\n";
+                    ControlC3D.agregarC3D(c3d);
+                    RESULT = new NodoC3D(temp);
+                :}
+            |   expresion:e1 EQ expresion:e2
+                {:
+                    String temp = ControlC3D.generaTemp();
+                    String c3d = temp + " = " + e1.getCad() + " == " + e2.getCad() + ";\n";
+                    ControlC3D.agregarC3D(c3d);
+                    RESULT = new NodoC3D(temp);
+                :}
+            |   expresion:e1 DIF expresion:e2
+                {:
+                    String temp = ControlC3D.generaTemp();
+                    String c3d = temp + " = " + e1.getCad() + " != " + e2.getCad() + ";\n";
+                    ControlC3D.agregarC3D(c3d);
+                    RESULT = new NodoC3D(temp);
+                :}
+            |   expresion:e1 GT  expresion:e2
+                {:
+                    String temp = ControlC3D.generaTemp();
+                    String c3d = temp + " = " + e1.getCad() + " > " + e2.getCad() + ";\n";
+                    ControlC3D.agregarC3D(c3d);
+                    RESULT = new NodoC3D(temp);
+                :}
+            |   expresion:e1 LT  expresion:e2
+                {:
+                    String temp = ControlC3D.generaTemp();
+                    String c3d = temp + " = " + e1.getCad() + " < " + e2.getCad() + ";\n";
+                    ControlC3D.agregarC3D(c3d);
+                    RESULT = new NodoC3D(temp);
+                :}
+            |   expresion:e1 LT_EQ expresion:e2
+                {:
+                    String temp = ControlC3D.generaTemp();
+                    String c3d = temp + " = " + e1.getCad() + " <= " + e2.getCad() + ";\n";
+                    ControlC3D.agregarC3D(c3d);
+                    RESULT = new NodoC3D(temp);
+                :}
+            |   expresion:e1 GT_EQ expresion:e2
+                {:
+                    String temp = ControlC3D.generaTemp();
+                    String c3d = temp + " = " + e1.getCad() + " >= " + e2.getCad() + ";\n";
+                    ControlC3D.agregarC3D(c3d);
+                    RESULT = new NodoC3D(temp);
+                :}
             |   MENOS expresion:exp 
                     {: 
                         String temp = ControlC3D.generaTemp();
                         String c3d = temp + " = - " + exp.getCad() + ";\n";
                         ControlC3D.agregarC3D(c3d);
                         RESULT = new NodoC3D(temp); 
+                    :}
+            |   NOT expresion:e1
+                    {:
+                        String temp = ControlC3D.generaTemp();
+                        String c3d = temp + " = - " + e1.getCad() + ";\n";
+                        ControlC3D.agregarC3D(c3d);
+                        RESULT = new NodoC3D(temp);
                     :}
             |   PAR_IZQ expresion:exp PAR_DER   
                     {: RESULT = exp; :}
